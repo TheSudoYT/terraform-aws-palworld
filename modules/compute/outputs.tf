@@ -29,3 +29,13 @@ output "palworldsettings_s3_bucket" {
   value       = aws_s3_object.palworldsettings[*].bucket
   description = "The download URI of the palworldsettings.ini from s3 ( experimental )."
 }
+
+output "palworld_server_public_port" {
+  value       = var.public_port
+  description = "The public port to connect to the Palworld sevrer on."
+}
+
+output "palworld_server_public_ip" {
+  value       = aws_eip.palworld_server_ip.public_ip
+  description = "The public IP address of the Palworld server to connect on."
+}

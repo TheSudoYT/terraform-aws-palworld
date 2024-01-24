@@ -1,4 +1,4 @@
-module "asa" {
+module "palworld" {
   source = "../.."
 
   # Infrastructure inputs

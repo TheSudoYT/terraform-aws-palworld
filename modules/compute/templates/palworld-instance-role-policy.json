@@ -12,14 +12,12 @@
                 "s3:GetBucketLocation"
             ],
             "Resource": [
-                %{ if custom_gameusersettings_s3 == true }"${gameusersettings_s3_bucket_arn}",%{ endif }
-                %{ if custom_gameusersettings_s3 == true }"${gameusersettings_s3_bucket_arn}/*",%{ endif }
-                %{ if custom_gameini_s3 == true }"${gameini_s3_bucket_arn}",%{ endif }
-                %{ if custom_gameini_s3 == true }"${gameini_s3_bucket_arn}/*",%{ endif }
+                %{ if custom_palworldsettings_s3 == true }"${palworldsettings_s3_bucket_arn}",%{ endif }
+                %{ if custom_palworldsettings_s3 == true }"${palworldsettings_s3_bucket_arn}/*",%{ endif }
                 %{ if enable_s3_backups == true }"${backup_s3_bucket_arn}",%{ endif }
                 %{ if enable_s3_backups == true }"${backup_s3_bucket_arn}/*",%{ endif }
-                ${if start_from_backup == true && var.backup_files_storage_type == local }"${aws_s3_bucket.ark_bootstrap[0].arn}",%{ endif }
-                ${if start_from_backup == true && var.backup_files_storage_type == local }"${aws_s3_bucket.ark_bootstrap[0].arn}/*",%{ endif }
+                ${if start_from_backup == true && var.backup_files_storage_type == local }"${aws_s3_bucket.palworld_bootstrap[0].arn}",%{ endif }
+                ${if start_from_backup == true && var.backup_files_storage_type == local }"${aws_s3_bucket.palworld_bootstrap[0].arn}/*",%{ endif }
                
             ]
         }

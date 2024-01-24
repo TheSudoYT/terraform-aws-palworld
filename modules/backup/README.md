@@ -3,6 +3,7 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0.0 |
 
 ## Providers
 
@@ -18,9 +19,9 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_s3_bucket.ark_backup_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket.palworld_backup_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_lifecycle_configuration.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
-| [aws_s3_bucket_versioning.ark_backup_versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
+| [aws_s3_bucket_versioning.palworld_backup_versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs
@@ -35,5 +36,5 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_backup_s3_bucket_arn"></a> [backup\_s3\_bucket\_arn](#output\_backup\_s3\_bucket\_arn) | n/a |
-| <a name="output_backup_s3_bucket_name"></a> [backup\_s3\_bucket\_name](#output\_backup\_s3\_bucket\_name) | n/a |
+| <a name="output_backup_s3_bucket_arn"></a> [backup\_s3\_bucket\_arn](#output\_backup\_s3\_bucket\_arn) | The ARN of the S3 bucket created for backups if enabled. |
+| <a name="output_backup_s3_bucket_name"></a> [backup\_s3\_bucket\_name](#output\_backup\_s3\_bucket\_name) | The ID of the S3 bucket created for backups if enabled. |

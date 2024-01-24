@@ -41,7 +41,7 @@ resource "aws_instance" "palworld_server" {
   }
 
   tags = {
-    Name = var.server_description
+    Name = var.server_name
   }
 }
 

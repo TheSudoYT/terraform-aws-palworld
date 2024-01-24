@@ -1,5 +1,5 @@
-module "asa" {
-  source = "TheSudoYT/ark-survival-ascended/aws"
+module "palworld" {
+  source = "../.."
 
   # Infrastructure inputs
   ge_proton_version = "8-27"

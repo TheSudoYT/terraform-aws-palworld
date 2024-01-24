@@ -57,7 +57,7 @@ User=steam
 Group=steam
 ExecStartPre=/opt/steam/steamcmd.sh +runscript /opt/steam/download-palworld.txt
 WorkingDirectory=/palworld-server
-ExecStart=/palworld-server/PalServer.sh %{ if day_time_speed_rate != "1" ~}?DayTimeSpeedRate=${day_time_speed_rate}%{ endif ~} -port=8211 -players=32 -EpicApp=PalServer
+ExecStart=/palworld-server/PalServer.sh EpicApp=PalServer
 
 Restart=on-failure
 RestartSec=20s
@@ -65,6 +65,75 @@ RestartSec=20s
 [Install]
 WantedBy=multi-user.target
 EOF
+
+if [[ ${use_custom_palworldsettings} == "false" ]]; then
+mkdir -p /palworld-server/Pal/Saved/Config/LinuxServer/
+cat > /palworld-server/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini <<EOF
+[/Script/Pal.PalGameWorldSettings]
+OptionSettings=(Difficulty="${difficulty}",
+DayTimeSpeedRate=${day_time_speed_rate},
+NightTimeSpeedRate=${night_time_speed_rate},
+ExpRate=${exp_rate},
+PalCaptureRate=${pal_capture_rate},
+PalSpawnNumRate=${pal_spawn_num_rate},
+PalDamageRateAttack=${pal_damage_rate_attack},
+PalDamageRateDefense=${pal_damage_rate_defense},
+PlayerDamageRateAttack=${player_damage_rate_attack},
+PlayerDamageRateDefense=${player_damage_rate_defense},
+PlayerStomachDecreaceRate=${player_stomach_decrease_rate},
+PlayerStaminaDecreaceRate=${player_stamina_decrease_rate},
+PlayerAutoHPRegeneRate=${player_auto_hp_regen_rate},
+PlayerAutoHpRegeneRateInSleep=${player_auto_hp_regen_rate_in_sleep},
+PalStomachDecreaceRate=${pal_stomach_decrease_rate},
+PalStaminaDecreaceRate=${pal_stamina_decrease_rate},
+PalAutoHPRegeneRate=${pal_auto_hp_regen_rate},
+PalAutoHpRegeneRateInSleep=${pal_auto_hp_regene_rate_in_sleep},
+BuildObjectDamageRate=${build_object_damage_rate},
+BuildObjectDeteriorationDamageRate=${build_object_deterioration_damage_rate},
+CollectionDropRate=${collection_drop_rate},
+CollectionObjectHpRate=${collection_object_hp_rate},
+CollectionObjectRespawnSpeedRate=${collection_object_respawn_speed_rate},
+EnemyDropItemRate=${enemy_drop_item_rate},
+DeathPenalty=${death_penalty},
+bEnablePlayerToPlayerDamage=${enable_player_to_player_damage},
+bEnableFriendlyFire=${enable_friendly_fire},
+bEnableInvaderEnemy=${enable_invader_enemy},
+bActiveUNKO=${active_unko},
+bEnableAimAssistPad=${enable_aim_assist_pad},
+bEnableAimAssistKeyboard=${enable_aim_assist_keyboard},
+DropItemMaxNum=${drop_item_max_num},
+DropItemMaxNum_UNKO=${drop_item_max_num_unko},
+BaseCampMaxNum=${base_camp_max_num},
+BaseCampWorkerMaxNum=${base_camp_worker_max_num},
+DropItemAliveMaxHours=${drop_item_alive_max_hours},
+bAutoResetGuildNoOnlinePlayers=${auto_reset_guild_no_online_players},
+AutoResetGuildTimeNoOnlinePlayers=${auto_reset_guild_time_no_online_players},
+GuildPlayerMaxNum=${guild_player_max_num},
+PalEggDefaultHatchingTime=${pal_egg_default_hatching_time},
+WorkSpeedRate=${work_speed_rate},
+bIsMultiplay=${is_multiplay},
+bIsPvP=${is_pvp},
+bCanPickupOtherGuildDeathPenaltyDrop=${can_pickup_other_guild_death_penalty_drop},
+bEnableNonLoginPenalty=${enable_non_login_penalty},
+bEnableFastTravel=${enable_fast_travel},
+bIsStartLocationSelectByMap=${is_start_location_select_by_map},
+bExistPlayerAfterLogout=${exist_player_after_logout},
+bEnableDefenseOtherGuildPlayer=${enable_defense_other_guild_player},
+CoopPlayerMaxNum=${coop_player_max_num},
+ServerPlayerMaxNum=${server_player_max_num},
+ServerName="${server_name}",
+ServerDescription="${server_description}",
+AdminPassword="${admin_password}",
+ServerPassword="${server_password}",
+PublicPort=${public_port},
+PublicIP="${public_ip}",
+RCONEnabled=${enable_rcon},
+RCONPort=${rcon_port},
+Region="${region}",
+bUseAuth=${use_auth},
+BanListURL="${ban_list_url}")
+EOF
+fi
 
 # Function for getting palworldsettings from S3
 retrieve_obj_from_s3() {
