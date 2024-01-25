@@ -202,9 +202,27 @@ handle_palworldsettings() {
 # DONT FORGET TO PARAMETERIZE THE MAP NAME WHEN YOU DO MULTIPLE MAPS!! ##
 #####
 # Function for getting save game files from S3
-retrieve_obj_from_s3_backup() {
+retrieve_obj_from_s3_backup_levelData() {
   local src="$1"
-  local dst="/palworld-server/Pal/Saved/SaveGames"
+  local dedicatedservername="$2"
+  local dst="/palworld-server/Pal/Saved/SaveGames/0/$2"
+
+  echo "[INFO] GETTING LEVEL SAVE BACKUP FILES FROM S3"
+
+  if [[ "$src" == "" ]]; then
+    echo "[ERROR] Did not detect a valid path."
+    exit_script 10
+  else
+    mkdir -p "$dst"
+    echo "[INFO] Copying $src to $dst..."
+    aws s3 sync "$src" "$dst"
+  fi
+}
+
+retrieve_obj_from_s3_backup_playerData() {
+  local src="$1"
+  local dedicatedservername="$2"
+  local dst="/palworld-server/Pal/Saved/SaveGames/0/$2/Players"
 
   echo "[INFO] GETTING SAVE BACKUP FILES FROM S3"
 
@@ -212,32 +230,92 @@ retrieve_obj_from_s3_backup() {
     echo "[ERROR] Did not detect a valid path."
     exit_script 10
   else
+    mkdir -p "$dst"
     echo "[INFO] Copying $src to $dst..."
     aws s3 sync "$src" "$dst"
   fi
 }
 
+retrieve_obj_from_existing_s3_levelData() {
+  local src="$1"
+  local dedicatedservername="$2"
+  local dst="palworld-server/Pal/Saved/SaveGames/0/$2"
+
+  echo "[INFO] GETTING SAVE BACKUP FILES FROM USER PROVIDED S3"
+
+  if [[ "$src" == "" ]]; then
+    echo "[ERROR] Did not detect a valid path."
+    exit_script 10
+  else
+    mkdir -p "$dst"
+    echo "[INFO] Copying $src to $dst..."
+    aws s3 sync "$src" "$dst"
+  fi
+}
+
+retrieve_obj_from_existing_s3_playerData() {
+  local src="$1"
+  local dedicatedservername="$2"
+  local dst="/palworld-server/Pal/Saved/SaveGames/0/$2/Players"
+
+  echo "[INFO] GETTING SAVE BACKUP FILES FROM USER PROVIDED S3"
+
+  if [[ "$src" == "" ]]; then
+    echo "[ERROR] Did not detect a valid path."
+    exit_script 10
+  else
+    mkdir -p "$dst"
+    echo "[INFO] Copying $src to $dst..."
+    aws s3 sync "$src" "$dst"
+  fi
+}
+
+create_gus(){
+  echo "[INFO] CREATING GAMEUSERSETTINGS.INI WITH DEDICATED SERVER HASH PROVIDED"
+  
+  mkdir -p /palworld-server/Pal/Saved/Config/LinuxServer
+
+  cat > /palworld-server/Pal/Saved/Config/LinuxServer/GameUserSettings.ini <<EOG
+[/Script/Pal.PalGameLocalSettings]
+AudioSettings=(Master=0.500000,BGM=1.000000,SE=1.000000,PalVoice=1.000000,HumanVoice=1.000000,Ambient=1.000000,UI=1.000000)
+GraphicsLevel=None
+DefaultGraphicsLevel=None
+bRunedBenchMark=False
+bHasAppliedUserSetting=False
+DedicatedServerName=${dedicated_server_name_hash}
+AntiAliasingType=AAM_TSR
+DLSSMode=Performance
+GraphicsCommonQuality=0
+EOG
+
+}
 handle_start_from_backup() {
     local start_from_backup="$1"
     local backup_files_storage_type="$2"
     local backup_files_local_path="$3"
     local backup_files_bootstrap_bucket_name="$4"
-    local backup_files_s3_bucket_uri="$5"
+    local existing_backup_files_bootstrap_bucket_name="$5"
+    local dedicatedservername="$6"
 
     echo "[INFO] CHECKING FOR START_FROM_BACKUP OPTIONS"
     echo "[INFO] start_from_backup SET TO $start_from_backup"
     echo "[INFO] backup_files_storage_type SET TO $backup_files_storage_type"
     echo "[INFO] backup_files_local_path SET TO $backup_files_local_path"
-    echo "[INFO] backup_files_s3_bucket_uri SET TO $backup_files_s3_bucket_uri"
+    echo "[INFO] existing_backup_files_bootstrap_bucket_name SET TO $existing_backup_files_bootstrap_bucket_name"
+    echo "[INFO] dedicated_server_name_hash SET TO $dedicatedservername"
+
 
     if [[ $start_from_backup == "true" ]]; then
         if [[ $backup_files_storage_type == "local" ]]; then
             echo "[INFO] backup_files_storage_type == local"
-            retrieve_obj_from_s3_backup "$backup_files_bootstrap_bucket_name"
+            create_gus
+            retrieve_obj_from_s3_backup_levelData "$backup_files_bootstrap_bucket_name" "$dedicatedservername"
+            retrieve_obj_from_s3_backup_playerData "$backup_files_bootstrap_bucket_name/Players" "$dedicatedservername"
         elif [[ $backup_files_storage_type == "s3" ]]; then
             echo "[INFO] backup_files_storage_type == s3"
-            # to do
-            retrieve_obj_from_existing_s3 "$backup_files_s3_bucket_uri"
+            create_gus
+            retrieve_obj_from_existing_s3_levelData "$existing_backup_files_bootstrap_bucket_name" "$dedicatedservername"
+            retrieve_obj_from_existing_s3_playerData "$existing_backup_files_bootstrap_bucket_name/Players" "$dedicatedservername"
         else
             echo "Error: Invalid configuration for start_from_backup"
         fi
@@ -246,7 +324,7 @@ handle_start_from_backup() {
 
 if [[ ${start_from_backup} == "true" ]]; then
 echo "[INFO] START FROM EXISTING SAVE DATA/BACKUP REQUESTED FOR USE"
-handle_start_from_backup ${start_from_backup} ${backup_files_storage_type} ${backup_files_local_path} ${backup_files_bootstrap_bucket_name} ${backup_files_s3_bucket_uri}
+handle_start_from_backup ${start_from_backup} ${backup_files_storage_type} ${backup_files_local_path} ${backup_files_bootstrap_bucket_name} ${existing_backup_files_bootstrap_bucket_name} ${dedicated_server_name_hash}
 fi
 
 if [[ ${use_custom_palworldsettings} == "true" ]]; then
@@ -279,6 +357,7 @@ cat > /palworld-server/palworld_backup_script.sh <<EOD
 
 # Backup variables
 DIR_TO_BACKUP="/palworld-server/Pal/Saved/SaveGames"
+GUS_BACKUP="/palworld-server/Pal/Saved/Config/LinuxServer/GameUserSettings.ini"
 S3_BUCKET_NAME="${backup_s3_bucket_name}"
 
 generate_timestamp() {
@@ -295,6 +374,7 @@ tar -zcvf "\$BACKUP_FILENAME" "\$DIR_TO_BACKUP"
 # Upload backup to S3
 echo "[INFO] Uploading palworld Backup to s3"
 aws s3 cp "\$BACKUP_FILENAME" s3://"\$S3_BUCKET_NAME"/
+aws s3 cp "\$GUS_BACKUP" s3://"\$S3_BUCKET_NAME"/
 
 # Remove local backup file
 echo "[INFO] Removing Local palworld Backup File"

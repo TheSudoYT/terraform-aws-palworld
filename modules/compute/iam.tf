@@ -44,6 +44,8 @@ data "aws_iam_policy_document" "palworld_policy" {
       var.enable_s3_backups == true ? "${var.backup_s3_bucket_arn}/*" : "",
       var.start_from_backup == true && var.backup_files_storage_type == "local" ? aws_s3_bucket.palworld_bootstrap[0].arn : "",
       var.start_from_backup == true && var.backup_files_storage_type == "local" ? "${aws_s3_bucket.palworld_bootstrap[0].arn}/*" : "",
+      var.start_from_backup == true && var.backup_files_storage_type == "s3" ? var.existing_backup_files_bootstrap_bucket_arn : "",
+      var.start_from_backup == true && var.backup_files_storage_type == "s3" ? "${var.existing_backup_files_bootstrap_bucket_arn}/*" : "",
     ])
   }
 }

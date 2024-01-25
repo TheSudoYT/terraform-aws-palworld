@@ -1,13 +1,13 @@
 provider "aws" {}
 
+
 run "pass_validate_rcon_false_port_null" {
   command = plan
 
   variables {
-    enable_rcon      = false
-    rcon_port        = null
-    steam_query_port = 27015
-    game_client_port = 7777
+    enable_rcon = false
+    rcon_port   = null
+    public_port = 8211
   }
 
   // Test enable_rcon = false with null rcon_port
@@ -22,10 +22,9 @@ run "pass_validate_rcon_true_port_defined" {
   command = plan
 
   variables {
-    enable_rcon      = true
-    rcon_port        = 27011
-    steam_query_port = 27015
-    game_client_port = 7777
+    enable_rcon = true
+    rcon_port   = 27025
+    public_port = 8211
   }
 
   // Test enable_rcon = true with defined rcon_port

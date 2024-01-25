@@ -98,20 +98,74 @@ You can use an existing PalWorldSettings.ini so that the server starts with your
 
 - Using the GitHub option will simply instruct the user_data script that runs when the server starts to download PalWorldSettings.ini to the server and place it in `/palworld-server/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 
-## Troubleshooting
-- Monitoring the installation - You can view the user_data script that ran by connecting to your server via SSH using the public key you provided, ubuntu user, and the IP address of the server. Example: `ssh -i .\palworld_public_key ubuntu@34.225.216.87`. Once on the server you can view the progress of the user_data script that installs and configures ark using the command `journalctl -xu cloud-final`. Use the space bar to scroll through the output line by line or `shift+g` to scroll the end of the output. If there is an obvvious reason that palworld failed to install or start in the way you expect, you can most likely find it here.
+## Starting From Existing Save Data, Restoring From Backups, or Migrating Servers
+>[!DANGER]
+> You MUST know the DedicatedServerName value set in your old palworld servers `Pal/Saved/Config/LinuxServer/GameUserSettings.ini` file. This is also the name of the directory from the old server that contained your .sav files.
 
-- Checking the ark service is running - You can run `systemctl status palworld` to view the status of the ark server. The service should say `Active: active (running)`. If it does not, then the palworld server failed to start or has stopped for some reason.
+>[!NOTE]
+> Using this modules `enable_s3_backups = true` option will backup the `GameUserSettings.ini` file to S3 as well in the event the server is lost.
+
+### Using You Own S3 Bucket ( Bring Your Own )
+
+Set `backup_files_storage_type = "s3"` if you have an AWS s3 bucket somewhere with the backups files already in it. Please note the warning below about the REQUIRED file structure of the bucket. Terraform and user_data are opinionated in how they retrieve and place these files, so you must adhere to this structure.
+
+> [!WARNING]
+> When `backup_files_storage_type = "s3"` using The objects in the S3 bucket must not be compressed and must be in the root of the S3 bucket. The bucket's file structure MUST match the picture below. It will be synced to the `SaveGame/0/<dedicated_server_name>` directory.
+
+![Required S3 Structure](docs/images/restore_from_existing_s3_structure.png)
+
+### Using Local Files
+
+Set `backup_files_storage_type = "local"` if the save files are on your local host PC. Please note the warning below about the REQUIRED file structure of the bucket. Terraform and user_data are opinionated in how they retrieve and place these files, so you must adhere to this structure.
+
+> [!WARNING]
+> When `backup_files_storage_type = "local"` using The objects/files in the directory you specify with `backup_files_local_path` must not be compressed. Terraform will iterate through each file in that directory and upload it to the root of an S3 bucket it creates. It will do this for `backup_files_local_path/Players` as well.
+
+Required local file structure
+
+![Required Local File Structure](docs/images/restore_from_local_files.png)
+
+- `backup_files_storage_type = "local"` will instruct terraform to create an S3 bucket named `palworld-bootstrap-local-saves-<region>-<accID>` and upload the save files from your local PC `backup_files_local_path` directory specified to that bucket. The user_data script on the EC2 instance will download the files from that S3 bucket when the server starts and place them in the `/palworld-server/Pal/Saved/SaveGames/0/<dedicated_server_name_hash>` directory.
+
+- `backup_files_storage_type = "s3"` Is informing terraform that you have an existing S3 bucket somewhere that contains the save game data. The EC2 user_data script will attempt to sync the root of that S3 bucket with the `SaveGames/0/<dedicated_server_name_hash>` directory. It will also attempt to sync the S3 buckets `Players` folder to `SaveGames/0/<dedicated_server_name_hash>/Players` That is why it is important that the objects be uncompressed and in the proper structure. 
+
+> [!WARNING]
+> When `backup_files_storage_type = "local"` using The objects/files in the directory you specify with `backup_files_local_path` must not be compressed. Terraform will iterate through each file in that directory and upload it to the root of an S3 bucket it creates.
+
+### Usage - Restore From Local Files
+Relevant inputs:
+
+```HCL
+  start_from_backup         = true
+  backup_files_storage_type = "local"
+  dedicated_server_name_hash = "FA8C44A6FA46436AAAE4D414C4214B25"
+  backup_files_local_path   = "../../assets"
+```
+
+### Usage - Restore From an Existing S3 Bucket ( Bring Your Own S3 Bucket)
+Relevant inputs:
+
+```HCL
+  start_from_backup         = true
+  backup_files_storage_type = "s3"
+  dedicated_server_name_hash = "FA8C44A6FA46436AAAE4D414C4214B25"
+  existing_backup_files_bootstrap_bucket_arn  = "arn:aws:s3:::palworld-existing-s3-bucket-bootstrap"
+  existing_backup_files_bootstrap_bucket_name = "palworld-existing-s3-bucket-bootstrap"
+```
+
+- If start from backup = true then dedicated_server_name_hash is required
+
+## Troubleshooting
+- Monitoring the installation - You can view the user_data script that ran by connecting to your server via SSH using the public key you provided, ubuntu user, and the IP address of the server. Example: `ssh -i .\palworld_public_key ubuntu@34.225.216.87`. Once on the server you can view the progress of the user_data script that installs and configures palworld using the command `journalctl -xu cloud-final`. Use the space bar to scroll through the output line by line or `shift+g` to scroll the end of the output. If there is an obvvious reason that palworld failed to install or start in the way you expect, you can most likely find it here.
+
+- Checking the palworld service is running - You can run `systemctl status palworld` to view the status of the palworld server. The service should say `Active: active (running)`. If it does not, then the palworld server failed to start or has stopped for some reason.
 
 ## Examples
 - [Using a Custom PalWorldSetting.ini From S3](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/custom_palworldsettings_s3)
 - [Using a Custom PalWorldSettings.ini From GitHub](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/custom_palworldsettings_github)
 - [Enabling backups to S3](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/backups_enabled)
 - [Using Default Palworld Settings](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/vanilla_palworld_default_settings)
-
-- custom settings == false - creates an ini with the inputs provided or their defaults
-- custom settings == true - uses your custom settings
-- Cannot combine the 2. 1 or the other. 
+- [Restoring From Backup Files](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/restore_from_backup)
 
 ## Possible and Known Bugs
 Memory leak?
@@ -150,7 +204,6 @@ No resources.
 | <a name="input_auto_reset_guild_no_online_players"></a> [auto\_reset\_guild\_no\_online\_players](#input\_auto\_reset\_guild\_no\_online\_players) | Auto reset guild when no online players | `bool` | `false` | no |
 | <a name="input_auto_reset_guild_time_no_online_players"></a> [auto\_reset\_guild\_time\_no\_online\_players](#input\_auto\_reset\_guild\_time\_no\_online\_players) | Time for auto reset guild when no online players | `number` | `72` | no |
 | <a name="input_backup_files_local_path"></a> [backup\_files\_local\_path](#input\_backup\_files\_local\_path) | Path to existing save game files relative to your Terraform working directory. Will be uploaded to the server. Required if `backup_files_storage_path = local` | `string` | `""` | no |
-| <a name="input_backup_files_s3_bucket_uri"></a> [backup\_files\_s3\_bucket\_uri](#input\_backup\_files\_s3\_bucket\_uri) | The URI of the save game files in an S3 bucket. Will be uploaded to the server. `Required if backup_files_storage_type = s3`. | `string` | `""` | no |
 | <a name="input_backup_files_storage_type"></a> [backup\_files\_storage\_type](#input\_backup\_files\_storage\_type) | The location of your save game files that you wish to start the server with. Supported options are `local` or `s3'. `local` means the save game files exist somewhere on the host you are running terraform apply from. `s3` means the files exist in an s3 bucket.` | `string` | `"local"` | no |        
 | <a name="input_backup_interval_cron_expression"></a> [backup\_interval\_cron\_expression](#input\_backup\_interval\_cron\_expression) | How often to backup the ShooterGame/Saved directory to S3 in cron expression format (https://crontab.cronhub.io/) | `string` | `"0 23 * * *"` | no |
 | <a name="input_backup_s3_bucket_arn"></a> [backup\_s3\_bucket\_arn](#input\_backup\_s3\_bucket\_arn) | The ARN of the s3 bucket that you would like to use for ShooterGame/Saved directory backups | `string` | `""` | no |
@@ -172,6 +225,7 @@ No resources.
 | <a name="input_custom_palworldsettings_s3"></a> [custom\_palworldsettings\_s3](#input\_custom\_palworldsettings\_s3) | True or False. Set true if use\_custom\_palworldsettings is true and you want to upload and download them from an S3 bucket during installation | `bool` | `false` | no |
 | <a name="input_day_time_speed_rate"></a> [day\_time\_speed\_rate](#input\_day\_time\_speed\_rate) | Day time speed rate | `number` | `1` | no |
 | <a name="input_death_penalty"></a> [death\_penalty](#input\_death\_penalty) | Death penalty setting. None : No lost, Item : Lost item without equipment, ItemAndEquipment : Lost item and equipment, All : Lost All item, equipment, pal(in inventory) | `string` | `"Item"` | no |
+| <a name="input_dedicated_server_name_hash"></a> [dedicated\_server\_name\_hash](#input\_dedicated\_server\_name\_hash) | The DedicatedServerName= value from the old servers GameUserSettings.ini. Will be set on the new server to ensure data properly loads with backup data. | `string` | `""` | no |
 | <a name="input_difficulty"></a> [difficulty](#input\_difficulty) | Game difficulty setting | `string` | `"None"` | no |
 | <a name="input_drop_item_alive_max_hours"></a> [drop\_item\_alive\_max\_hours](#input\_drop\_item\_alive\_max\_hours) | Maximum hours a drop item is alive | `number` | `1` | no |
 | <a name="input_drop_item_max_num"></a> [drop\_item\_max\_num](#input\_drop\_item\_max\_num) | Maximum number of drop items | `number` | `3000` | no |
@@ -189,6 +243,8 @@ No resources.
 | <a name="input_enable_s3_backups"></a> [enable\_s3\_backups](#input\_enable\_s3\_backups) | True or False. Set to true to enable backing up of the ShooterGame/Saved directory to S3 | `bool` | `false` | no |
 | <a name="input_enemy_drop_item_rate"></a> [enemy\_drop\_item\_rate](#input\_enemy\_drop\_item\_rate) | Enemy drop item rate | `number` | `1` | no |
 | <a name="input_exist_player_after_logout"></a> [exist\_player\_after\_logout](#input\_exist\_player\_after\_logout) | Does player exist in game after logout | `bool` | `false` | no |
+| <a name="input_existing_backup_files_bootstrap_bucket_arn"></a> [existing\_backup\_files\_bootstrap\_bucket\_arn](#input\_existing\_backup\_files\_bootstrap\_bucket\_arn) | The ARN of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed. | `string` | `""` | no |
+| <a name="input_existing_backup_files_bootstrap_bucket_name"></a> [existing\_backup\_files\_bootstrap\_bucket\_name](#input\_existing\_backup\_files\_bootstrap\_bucket\_name) | The Name of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed. | `string` | `""` | no |
 | <a name="input_existing_ssh_key_name"></a> [existing\_ssh\_key\_name](#input\_existing\_ssh\_key\_name) | The name of an EXISTING SSH key for use with the EC2 instance | `string` | `null` | no |
 | <a name="input_exp_rate"></a> [exp\_rate](#input\_exp\_rate) | Experience rate | `number` | `1` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | True or False. Set to true if you want Terraform destroy commands to have the ability to destroy the backup bucket while it still containts backup files | `bool` | `false` | no |

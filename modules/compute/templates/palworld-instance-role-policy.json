@@ -18,7 +18,8 @@
                 %{ if enable_s3_backups == true }"${backup_s3_bucket_arn}/*",%{ endif }
                 ${if start_from_backup == true && var.backup_files_storage_type == local }"${aws_s3_bucket.palworld_bootstrap[0].arn}",%{ endif }
                 ${if start_from_backup == true && var.backup_files_storage_type == local }"${aws_s3_bucket.palworld_bootstrap[0].arn}/*",%{ endif }
-               
+                ${if start_from_backup == true && var.backup_files_storage_type == s3 }"${existing_backup_files_bootstrap_bucket_arn}",%{ endif }
+                ${if start_from_backup == true && var.backup_files_storage_type == s3 }"${existing_backup_files_bootstrap_bucket_arn}/*",%{ endif }              
             ]
         }
     ]

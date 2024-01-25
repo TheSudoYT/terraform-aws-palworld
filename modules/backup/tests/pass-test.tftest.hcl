@@ -18,7 +18,7 @@ run "pass-validate-no-s3-bucket" {
   }
 
   assert {
-    condition     = length(aws_s3_bucket.ark_backup_bucket) == 0
+    condition     = length(aws_s3_bucket.palworld_backup_bucket) == 0
     error_message = "Backup S3 bucket attempting to be created when an S3 bucket is not expected to be created."
   }
 }

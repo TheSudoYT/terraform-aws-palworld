@@ -164,9 +164,21 @@ variable "backup_files_local_path" {
   default     = ""
 }
 
+variable "dedicated_server_name_hash" {
+  description = "The DedicatedServerName= value from the old servers GameUserSettings.ini. Will be set on the new server to ensure data properly loads with backup data."
+  type        = string
+  default     = ""
+}
+
 # if backup_files_storage_type s3 && start_from_backup = true
-variable "backup_files_s3_bucket_uri" {
-  description = "The URI of the save game files in an S3 bucket. Will be uploaded to the server. `Required if backup_files_storage_type = s3`."
+variable "existing_backup_files_bootstrap_bucket_arn" {
+  description = "The ARN of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
+  type        = string
+  default     = ""
+}
+
+variable "existing_backup_files_bootstrap_bucket_name" {
+  description = "The Name of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
   type        = string
   default     = ""
 }

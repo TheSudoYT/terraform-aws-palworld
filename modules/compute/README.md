@@ -32,8 +32,10 @@ No modules.
 | [aws_s3_bucket.palworld_bootstrap](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_versioning.palworld](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 | [aws_s3_bucket_versioning.palworld_bootstrap](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
-| [aws_s3_object.bootstrap_savegame_files](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_s3_object.bootstrap_level_savegame_files](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_s3_object.bootstrap_player_savegame_files](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
 | [aws_s3_object.palworldsettings](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_s3_object.players_directory](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
 | [aws_security_group_rule.allow_ssh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_ami.ubuntu](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
@@ -51,7 +53,6 @@ No modules.
 | <a name="input_auto_reset_guild_no_online_players"></a> [auto\_reset\_guild\_no\_online\_players](#input\_auto\_reset\_guild\_no\_online\_players) | Auto reset guild when no online players | `bool` | `false` | no |
 | <a name="input_auto_reset_guild_time_no_online_players"></a> [auto\_reset\_guild\_time\_no\_online\_players](#input\_auto\_reset\_guild\_time\_no\_online\_players) | Time for auto reset guild when no online players | `number` | `72` | no |
 | <a name="input_backup_files_local_path"></a> [backup\_files\_local\_path](#input\_backup\_files\_local\_path) | Path to existing save game files relative to your Terraform working directory. Will be uploaded to the server. Required if `backup_files_storage_path = local` | `string` | `""` | no |
-| <a name="input_backup_files_s3_bucket_uri"></a> [backup\_files\_s3\_bucket\_uri](#input\_backup\_files\_s3\_bucket\_uri) | The URI of the save game files in an S3 bucket. Will be uploaded to the server. `Required if backup_files_storage_type = s3`. | `string` | `""` | no |
 | <a name="input_backup_files_storage_type"></a> [backup\_files\_storage\_type](#input\_backup\_files\_storage\_type) | The location of your save game files that you wish to start the server with. Supported options are `local` or `s3'. `local` means the save game files exist somewhere on the host you are running terraform apply from. `s3` means the files exist in an s3 bucket.` | `string` | `"local"` | no |        
 | <a name="input_backup_interval_cron_expression"></a> [backup\_interval\_cron\_expression](#input\_backup\_interval\_cron\_expression) | How often to backup the ShooterGame/Saved directory to S3 in cron expression format (https://crontab.cronhub.io/) | `string` | `"0 23 * * *"` | no |
 | <a name="input_backup_s3_bucket_arn"></a> [backup\_s3\_bucket\_arn](#input\_backup\_s3\_bucket\_arn) | The ARN of the s3 bucket that you would like to use for ShooterGame/Saved directory backups | `string` | `""` | no |
@@ -73,6 +74,7 @@ No modules.
 | <a name="input_custom_palworldsettings_s3"></a> [custom\_palworldsettings\_s3](#input\_custom\_palworldsettings\_s3) | True or False. Set true if use\_custom\_palworldsettings is true and you want to upload and download them from an S3 bucket during installation | `bool` | `false` | no |
 | <a name="input_day_time_speed_rate"></a> [day\_time\_speed\_rate](#input\_day\_time\_speed\_rate) | Day time speed rate | `number` | `1` | no |
 | <a name="input_death_penalty"></a> [death\_penalty](#input\_death\_penalty) | Death penalty setting. None : No lost, Item : Lost item without equipment, ItemAndEquipment : Lost item and equipment, All : Lost All item, equipment, pal(in inventory) | `string` | `"Item"` | no |
+| <a name="input_dedicated_server_name_hash"></a> [dedicated\_server\_name\_hash](#input\_dedicated\_server\_name\_hash) | The DedicatedServerName= value from the old servers GameUserSettings.ini. Will be set on the new server to ensure data properly loads with backup data. | `string` | `""` | no |
 | <a name="input_difficulty"></a> [difficulty](#input\_difficulty) | Game difficulty setting | `string` | `"None"` | no |
 | <a name="input_drop_item_alive_max_hours"></a> [drop\_item\_alive\_max\_hours](#input\_drop\_item\_alive\_max\_hours) | Maximum hours a drop item is alive | `number` | `1` | no |
 | <a name="input_drop_item_max_num"></a> [drop\_item\_max\_num](#input\_drop\_item\_max\_num) | Maximum number of drop items | `number` | `3000` | no |
@@ -90,6 +92,8 @@ No modules.
 | <a name="input_enable_s3_backups"></a> [enable\_s3\_backups](#input\_enable\_s3\_backups) | True or False. Set to true to enable backing up of the ShooterGame/Saved directory to S3 | `bool` | `false` | no |
 | <a name="input_enemy_drop_item_rate"></a> [enemy\_drop\_item\_rate](#input\_enemy\_drop\_item\_rate) | Enemy drop item rate | `number` | `1` | no |
 | <a name="input_exist_player_after_logout"></a> [exist\_player\_after\_logout](#input\_exist\_player\_after\_logout) | Does player exist in game after logout | `bool` | `false` | no |
+| <a name="input_existing_backup_files_bootstrap_bucket_arn"></a> [existing\_backup\_files\_bootstrap\_bucket\_arn](#input\_existing\_backup\_files\_bootstrap\_bucket\_arn) | The ARN of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed. | `string` | `""` | no |
+| <a name="input_existing_backup_files_bootstrap_bucket_name"></a> [existing\_backup\_files\_bootstrap\_bucket\_name](#input\_existing\_backup\_files\_bootstrap\_bucket\_name) | The Name of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed. | `string` | `""` | no |
 | <a name="input_existing_ssh_key_name"></a> [existing\_ssh\_key\_name](#input\_existing\_ssh\_key\_name) | The name of an EXISTING SSH key for use with the EC2 instance | `string` | `null` | no |
 | <a name="input_exp_rate"></a> [exp\_rate](#input\_exp\_rate) | Experience rate | `number` | `1` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | True or False. Set to true if you want Terraform destroy commands to have the ability to destroy the backup bucket while it still containts backup files | `bool` | `false` | no |
