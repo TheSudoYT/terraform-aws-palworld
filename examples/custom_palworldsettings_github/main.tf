@@ -7,5 +7,5 @@ module "palworld" {
   use_custom_palworldsettings        = true
   custom_palworldsettings_s3         = false
   custom_palworldsettings_github     = true
-  custom_palworldsettings_github_url = "https://raw.githubusercontent.com/TheSudoYT/terraform-aws-palwolrd/initial/TestPalWorldSettings.ini?token=GHSAT0AAAAAACLHVUVTFCHETVPC3XAVTGICZMVYWWQ"
+  custom_palworldsettings_github_url = "https://github.com/TheSudoYT/terraform-aws-palworld/blob/main/TestPalWorldSettings.ini"
 }

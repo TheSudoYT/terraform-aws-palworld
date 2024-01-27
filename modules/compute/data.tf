@@ -122,5 +122,10 @@ data "template_file" "user_data_template" {
       condition     = var.enable_rcon == true && var.admin_password != "" || var.enable_rcon == false
       error_message = "admin_password must be set when enable_rcon = true"
     }
+
+    precondition {
+      condition     = var.start_from_backup == true && var.dedicated_server_name_hash != "" || var.start_from_backup == false
+      error_message = "When start_from_backup = true then dedicated_server_name_hash must be define."
+    }
   }
 }

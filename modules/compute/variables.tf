@@ -113,25 +113,6 @@ variable "backup_interval_cron_expression" {
   default     = "0 23 * * *"
 }
 
-# Backup inputs
-variable "create_backup_s3_bucket" {
-  description = "True or False. Do you want to create an S3 bucket to FTP backups into"
-  type        = bool
-  default     = false
-}
-
-variable "s3_bucket_backup_retention" {
-  description = "Lifecycle rule. The number of days to keep backups in S3 before they are deleted"
-  type        = number
-  default     = 7
-}
-
-variable "force_destroy" {
-  description = "True or False. Set to true if you want Terraform destroy commands to have the ability to destroy the backup bucket while it still containts backup files"
-  type        = bool
-  default     = false
-}
-
 ## Restore from backups
 variable "start_from_backup" {
   description = "True of False. Set true to start the server from an existing palworld save. Requires existing save game files."
@@ -166,13 +147,13 @@ variable "dedicated_server_name_hash" {
 
 # if backup_files_storage_type s3 && start_from_backup = true
 variable "existing_backup_files_bootstrap_bucket_arn" {
-  description = "The ARN of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
+  description = "The ARN of an existing S3 bucket with Palworld save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
   type        = string
   default     = ""
 }
 
 variable "existing_backup_files_bootstrap_bucket_name" {
-  description = "The Name of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
+  description = "The Name of an existing S3 bucket with Palworld save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
   type        = string
   default     = ""
 }
