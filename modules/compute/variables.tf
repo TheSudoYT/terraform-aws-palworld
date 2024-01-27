@@ -166,13 +166,13 @@ variable "dedicated_server_name_hash" {
 
 # if backup_files_storage_type s3 && start_from_backup = true
 variable "existing_backup_files_bootstrap_bucket_arn" {
-  description = "The ARN of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
+  description = "The ARN of an existing S3 bucket with Palworld save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
   type        = string
   default     = ""
 }
 
 variable "existing_backup_files_bootstrap_bucket_name" {
-  description = "The Name of an existing S3 bucket with ARK save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
+  description = "The Name of an existing S3 bucket with Palworld save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed."
   type        = string
   default     = ""
 }
