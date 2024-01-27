@@ -1,4 +1,4 @@
-# Palworld Dedicated Server Terraform ModulePalWorldSettings
+# Palworld Dedicated Server Terraform Module
 Palworld Server Infrastructure Terraform module.
 
 - Palworld dedicated server docs 
