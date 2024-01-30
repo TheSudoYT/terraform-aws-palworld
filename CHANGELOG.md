@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.0.3](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.2...v1.0.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **DeathPenalty:** Fixed DeathPenalty. Now takes 0,1,2 or 3 instead of string values ([cfa50b6](https://github.com/TheSudoYT/terraform-aws-palworld/commit/cfa50b60aae6317991ef92f47eb31f1096d7ee45))
+
 ### [1.0.2](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.1...v1.0.2) (2024-01-30)
 
 
