@@ -331,13 +331,13 @@ variable "enemy_drop_item_rate" {
 }
 
 variable "death_penalty" {
-  description = "Death penalty setting. None : No lost, Item : Lost item without equipment, ItemAndEquipment : Lost item and equipment, All : Lost All item, equipment, pal(in inventory)"
-  type        = string
-  default     = "Item"
+  description = "Death penalty setting. 0 = None : No lost, 1 = Item : Lost item without equipment, 2= ItemAndEquipment : Lost item and equipment, 3= All : Lost All item, equipment, pal(in inventory)"
+  type        = number
+  default     = 1
 
   validation {
-    condition     = var.death_penalty == "None" || var.death_penalty == "Item" || var.death_penalty == "ItemAndEquipment" || var.death_penalty == "All"
-    error_message = "Invalid value for death_penalty. Allowed values are None, Item, ItemAndEquipment, or All.\n"
+    condition     = var.death_penalty == 0 || var.death_penalty == 1 || var.death_penalty == 2 || var.death_penalty == 3
+    error_message = "Invalid value for death_penalty. Allowed values are 0 for None, 1 for Item, 2 for ItemAndEquipment, or 3 for All.\n"
   }
 }
 
