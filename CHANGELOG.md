@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.0.2](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.1...v1.0.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **game settings:** Fixed an issue preventing PalWorldSettings.ini values from reflecting in game ([4be07ed](https://github.com/TheSudoYT/terraform-aws-palworld/commit/4be07ed261d48eab547adeca9945ed2ffbafaa49))
+
 ### [1.0.1](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.0...v1.0.1) (2024-01-27)
 
 
