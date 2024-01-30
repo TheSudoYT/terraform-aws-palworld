@@ -29,7 +29,7 @@ module "palworld" {
   collection_object_hp_rate                 = 1.0
   collection_object_respawn_speed_rate      = 1.0
   enemy_drop_item_rate                      = 1.0
-  death_penalty                             = "Item"
+  death_penalty                             = 1
   enable_player_to_player_damage            = false
   enable_friendly_fire                      = false
   enable_invader_enemy                      = true
