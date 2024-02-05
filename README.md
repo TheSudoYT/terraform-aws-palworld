@@ -28,6 +28,7 @@ This module allows you to quickly deploy an Palworld server on AWS.
 - PalWorldSettings.ini settings are configurable inputs for creating a brand new configuration
 - Ability to store backups in S3 at a defined interval
 - Ability to start from existing save data
+- AWS SSM or SSH connectivity
 
 # How to Use
 ## Prerequisites
@@ -155,6 +156,23 @@ Relevant inputs:
 
 - If start from backup = true then dedicated_server_name_hash is required
 
+## Using SSM Instead of SSH
+AWS Systems Manager Session Manager is a web based way to connect to an instance from your browser instead of over SSH. It is more secure than enabling port 22 and SSH. Use the input `enable_session_manaer = true` to enable it. 
+
+> [!NOTE]
+> SSH and SSM can be used together is you wish.
+
+## Starting, Stopping, and Restarting Palworld
+
+| Action | Command |
+| ------ | ------- |
+| Stop Palworld | systemctl stop palworld |
+| Start Palworld | systemctl start palworld |
+| Restart Palworld | systemctl restart palworld |
+
+## Updating Palworld
+Palworld will update the next time the service is restarted with systemctl start palworld or systemctl restart palworld or if the server restarts. 
+
 ## Troubleshooting
 - Monitoring the installation - You can view the user_data script that ran by connecting to your server via SSH using the public key you provided, ubuntu user, and the IP address of the server. Example: `ssh -i .\palworld_public_key ubuntu@34.225.216.87`. Once on the server you can view the progress of the user_data script that installs and configures palworld using the command `journalctl -xu cloud-final`. Use the space bar to scroll through the output line by line or `shift+g` to scroll the end of the output. If there is an obvvious reason that palworld failed to install or start in the way you expect, you can most likely find it here.
 
@@ -166,6 +184,7 @@ Relevant inputs:
 - [Enabling backups to S3](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/backups_enabled)
 - [Using Default Palworld Settings](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/vanilla_palworld_default_settings)
 - [Restoring From Backup Files](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/restore_from_backup)
+- [Enabling SSM and Disabling SSH](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/ssm_instead_of_ssh)
 
 ## Possible and Known Bugs
 Memory leak?

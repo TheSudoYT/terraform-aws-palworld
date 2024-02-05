@@ -9,6 +9,16 @@ echo "[INFO] INSTALLING SOFTWARE"
 apt-get update
 apt-get install -y curl lib32gcc1 lsof git awscli
 
+
+# Install AWS SSM Agent if enabled
+if [[ ${enable_session_manager} == "true" ]]; then
+echo "[INFO] Installing AWS SSM Agent..."
+sudo snap install amazon-ssm-agent --classic
+sudo systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
+sudo systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
+echo "[INFO] AWS SSM Agent installation complete."
+fi
+
 # Install steam cmd
 echo "[INFO] DOWNLOADING AND INSTALLING STEAM CMD"
 wget -P /opt/steam https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz

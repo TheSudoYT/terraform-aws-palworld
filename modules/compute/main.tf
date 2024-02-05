@@ -22,7 +22,7 @@ resource "aws_instance" "palworld_server" {
 
   user_data = data.template_file.user_data_template.rendered
 
-  iam_instance_profile = var.custom_palworldsettings_s3 == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.enable_s3_backups == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.start_from_backup == true && length(aws_iam_instance_profile.instance_profile) > 0 ? aws_iam_instance_profile.instance_profile[0].name : null
+  iam_instance_profile = var.custom_palworldsettings_s3 == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.enable_s3_backups == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.start_from_backup == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.enable_session_manager == true ? aws_iam_instance_profile.instance_profile[0].name : null
 
 
   root_block_device {

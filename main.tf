@@ -7,6 +7,8 @@ module "palworld_vpc" {
   enable_rcon              = var.enable_rcon
   rcon_port                = var.rcon_port
   public_port              = var.public_port
+  enable_ssh               = var.enable_ssh
+  ssh_ingress_allowed_cidr = var.ssh_ingress_allowed_cidr
 }
 
 module "palworld_compute" {
@@ -15,11 +17,11 @@ module "palworld_compute" {
   instance_type              = var.instance_type
   palworld_security_group_id = module.palworld_vpc.security_group_id
   palworld_subnet_id         = module.palworld_vpc.subnet_id
+  enable_session_manager     = var.enable_session_manager
   create_ssh_key             = var.create_ssh_key
   ssh_public_key             = var.create_ssh_key == true ? var.ssh_public_key : ""
   existing_ssh_key_name      = var.existing_ssh_key_name
   ssh_key_name               = var.ssh_key_name
-  ssh_ingress_allowed_cidr   = var.ssh_ingress_allowed_cidr
   ami_id                     = var.ami_id
   ebs_volume_size            = var.ebs_volume_size
   enable_rcon                = var.enable_rcon

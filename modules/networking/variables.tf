@@ -35,3 +35,15 @@ variable "public_port" {
   type        = number
   default     = 8211
 }
+
+variable "enable_ssh" {
+  description = "True or False. Determines if SSH and port 22 are enabled or not"
+  type        = bool
+  default     = true
+}
+
+variable "ssh_ingress_allowed_cidr" {
+  description = "The CIDR range to allow SSH incoming connections from"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}

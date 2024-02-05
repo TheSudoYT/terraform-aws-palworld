@@ -1,3 +1,9 @@
+variable "enable_session_manager" {
+  description = "True or False. Determines if SSM Session Manager is enabled or not"
+  type        = bool
+  default     = false
+}
+
 variable "create_ssh_key" {
   description = "True or False. Determines if an SSH key is created in AWS"
   type        = bool

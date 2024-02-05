@@ -39,3 +39,8 @@ output "palworld_server_public_ip" {
   value       = aws_eip.palworld_server_ip.public_ip
   description = "The public IP address of the Palworld server to connect on."
 }
+
+output "session_manager_enabled" {
+  value       = var.enable_session_manager
+  description = "Is AWS SSM Session Manager enabled or not."
+}
