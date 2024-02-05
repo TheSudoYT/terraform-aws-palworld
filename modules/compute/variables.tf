@@ -22,12 +22,6 @@ variable "ssh_public_key" {
   default     = "~/.ssh/palworld_public_key.pub"
 }
 
-variable "ssh_ingress_allowed_cidr" {
-  description = "The CIDR range to allow SSH incoming connections from"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-}
-
 ### ec2 variables ###
 variable "ami_id" {
   description = "The AMI ID to use. Not providing one will result in the latest version of Ubuntu Focal 20.04 being used"
