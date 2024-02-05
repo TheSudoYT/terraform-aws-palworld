@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.3...v1.1.0) (2024-02-05)
+
+
+### Features
+
+* **ssm:** Inputs added to allow AWS SSM Session Manager for connecting and optional disabling of SSH ([45e790d](https://github.com/TheSudoYT/terraform-aws-palworld/commit/45e790d5848c8c1f04af5d4d52cc11012a33fe99))
+
+
+### Bug Fixes
+
+* **ports:** Fixed a bug in which a terraform apply with no changes would result in the ssh port being removed from state ([442a1cf](https://github.com/TheSudoYT/terraform-aws-palworld/commit/442a1cf9fb42632d66670c9acef0cd223670416d))
+
 ### [1.0.3](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.2...v1.0.3) (2024-01-30)
 
 
