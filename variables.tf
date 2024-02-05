@@ -16,6 +16,18 @@ variable "subnet_availability_zone" {
   default     = "us-east-1a"
 }
 
+variable "enable_session_manager" {
+  description = "True or False. Determines if SSM Session Manager is enabled or not"
+  type        = bool
+  default     = false
+}
+
+variable "enable_ssh" {
+  description = "True or False. Determines if SSH and port 22 are enabled or not"
+  type        = bool
+  default     = true
+}
+
 variable "create_ssh_key" {
   description = "True or False. Determines if an SSH key is created in AWS"
   type        = bool

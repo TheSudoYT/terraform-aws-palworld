@@ -5,17 +5,6 @@ resource "aws_key_pair" "ssh_key" {
   public_key = file(var.ssh_public_key)
 }
 
-# Allow inbound traffic to the EC2 instance on necessary ports
-resource "aws_security_group_rule" "allow_ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = var.ssh_ingress_allowed_cidr
-  security_group_id = var.palworld_security_group_id
-
-}
-
 resource "aws_instance" "palworld_server" {
 
   lifecycle {
@@ -33,7 +22,7 @@ resource "aws_instance" "palworld_server" {
 
   user_data = data.template_file.user_data_template.rendered
 
-  iam_instance_profile = var.custom_palworldsettings_s3 == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.enable_s3_backups == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.start_from_backup == true && length(aws_iam_instance_profile.instance_profile) > 0 ? aws_iam_instance_profile.instance_profile[0].name : null
+  iam_instance_profile = var.custom_palworldsettings_s3 == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.enable_s3_backups == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.start_from_backup == true && length(aws_iam_instance_profile.instance_profile) > 0 || var.enable_session_manager == true ? aws_iam_instance_profile.instance_profile[0].name : null
 
 
   root_block_device {

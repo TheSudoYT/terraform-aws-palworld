@@ -21,8 +21,9 @@ data "aws_region" "current" {}
 data "template_file" "user_data_template" {
   template = file("${path.module}/templates/user_data_script.sh.tpl")
   vars = {
-    enable_rcon = "${var.enable_rcon}"
-    rcon_port   = var.enable_rcon == true ? "${var.rcon_port}" : ""
+    enable_rcon            = "${var.enable_rcon}"
+    rcon_port              = var.enable_rcon == true ? "${var.rcon_port}" : ""
+    enable_session_manager = var.enable_session_manager
     #is_password_protected      = "${var.is_password_protected}"
     # START palworldsettings.ini inputs
     use_custom_palworldsettings    = "${var.use_custom_palworldsettings}"

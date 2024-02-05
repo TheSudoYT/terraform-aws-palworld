@@ -28,6 +28,7 @@ This module allows you to quickly deploy an Palworld server on AWS.
 - PalWorldSettings.ini settings are configurable inputs for creating a brand new configuration
 - Ability to store backups in S3 at a defined interval
 - Ability to start from existing save data
+- AWS SSM or SSH connectivity
 
 # How to Use
 ## Prerequisites
@@ -71,12 +72,12 @@ The terraform apply will complete, but the server will not appear in the server 
 > In testing it takes approximately 3 to 5 minutes for your server to appear on the community server list after installation is complete.
 
 ## Backups
-This module includes the option to enable backups. Enabling this will backup the `Pal/Saved/SaveGame` directory to an S3 bucket at the interval specified using cron. Backups will be retained in S3 based on the number of days specified by the input `s3_bucket_backup_retention`. This is to save money. Versioning, kms, and replication are disabled to save money.
+This module offers an optional backup feature, designed to safeguard your `Pal/Saved/SaveGame` directory by periodically copying it to an Amazon S3 bucket. When enabled, the backup feature automatically archives the specified directory to a designated S3 bucket at intervals defined by a cron expression. The retention period of these backups in S3 is controlled by the `s3_bucket_backup_retention parameter`, allowing for cost-effective storage management.
 
 > [!NOTE] 
 > Enabling this creates an additional S3 bucket. In testing, this adds an additional 0.10 USD ( 10 cents ) a month on average depending on the duration of backup retention, how often you backup, and how often you restore from backup. https://calculator.aws/#/addService
 
-2 Files will be created on the Palworld server; `palworld_backup_script.sh` on install and `palworld_backup_log.log` when the first backup job runs. 
+2 Files will be created on the Palworld server; `palworld_backup_script.sh` on install and `palworld_backup_log.log` AFTER the first backup job runs. 
 
 The backup should be visible in the AWS S3 bucket after the first specified backup interval time frame passes.
 
@@ -99,8 +100,13 @@ You can use an existing PalWorldSettings.ini so that the server starts with your
 - Using the GitHub option will simply instruct the user_data script that runs when the server starts to download PalWorldSettings.ini to the server and place it in `/palworld-server/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 
 ## Starting From Existing Save Data, Restoring From Backups, or Migrating Servers
+This guide outlines essential processes for starting from existing save data, restoring from backups, or migrating servers using this Terraform module. It emphasizes the importance of the DedicatedServerName setting and provides instructions for using both local and S3 bucket backups.
+
+### Prerequisites
+Before proceeding with backup or restoration processes, you must obtain the `DedicatedServerName` value from your old Palworld server's GameUserSettings.ini file. This value is crucial as it corresponds to the directory name containing your .sav files on the old server.
+
 >[!DANGER]
-> You MUST know the DedicatedServerName value set in your old palworld servers `Pal/Saved/Config/LinuxServer/GameUserSettings.ini` file. This is also the name of the directory from the old server that contained your .sav files.
+> It is mandatory to provide the `DedicatedServeName` from the old `Pal/Saved/Config/LinuxServer/GameUserSettings.ini` file. This is also the name of the directory from the old server that contained your .sav files.
 
 >[!NOTE]
 > Using this modules `enable_s3_backups = true` option will backup the `GameUserSettings.ini` file to S3 as well in the event the server is lost.
@@ -155,6 +161,23 @@ Relevant inputs:
 
 - If start from backup = true then dedicated_server_name_hash is required
 
+## Using SSM Instead of SSH
+AWS Systems Manager Session Manager is a web based way to connect to an instance from your browser instead of over SSH. It is more secure than enabling port 22 and SSH. Use the input `enable_session_manaer = true` to enable it. 
+
+> [!NOTE]
+> SSH and SSM can be used together is you wish.
+
+## Starting, Stopping, and Restarting Palworld
+
+| Action | Command |
+| ------ | ------- |
+| Stop Palworld | systemctl stop palworld |
+| Start Palworld | systemctl start palworld |
+| Restart Palworld | systemctl restart palworld |
+
+## Updating Palworld
+Palworld will update the next time the service is restarted with systemctl start palworld or systemctl restart palworld or if the server restarts. 
+
 ## Troubleshooting
 - Monitoring the installation - You can view the user_data script that ran by connecting to your server via SSH using the public key you provided, ubuntu user, and the IP address of the server. Example: `ssh -i .\palworld_public_key ubuntu@34.225.216.87`. Once on the server you can view the progress of the user_data script that installs and configures palworld using the command `journalctl -xu cloud-final`. Use the space bar to scroll through the output line by line or `shift+g` to scroll the end of the output. If there is an obvvious reason that palworld failed to install or start in the way you expect, you can most likely find it here.
 
@@ -166,6 +189,7 @@ Relevant inputs:
 - [Enabling backups to S3](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/backups_enabled)
 - [Using Default Palworld Settings](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/vanilla_palworld_default_settings)
 - [Restoring From Backup Files](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/restore_from_backup)
+- [Enabling SSM and Disabling SSH](https://github.com/TheSudoYT/terraform-aws-palworld/tree/main/examples/ssm_instead_of_ssh)
 
 ## Possible and Known Bugs
 Memory leak?
@@ -241,6 +265,8 @@ No resources.
 | <a name="input_enable_player_to_player_damage"></a> [enable\_player\_to\_player\_damage](#input\_enable\_player\_to\_player\_damage) | Enable player to player damage | `bool` | `false` | no |
 | <a name="input_enable_rcon"></a> [enable\_rcon](#input\_enable\_rcon) | Is RCON enabled | `bool` | `false` | no |
 | <a name="input_enable_s3_backups"></a> [enable\_s3\_backups](#input\_enable\_s3\_backups) | True or False. Set to true to enable backing up of the ShooterGame/Saved directory to S3 | `bool` | `false` | no |
+| <a name="input_enable_session_manager"></a> [enable\_session\_manager](#input\_enable\_session\_manager) | True or False. Determines if SSM Session Manager is enabled or not | `bool` | `false` | no |
+| <a name="input_enable_ssh"></a> [enable\_ssh](#input\_enable\_ssh) | True or False. Determines if SSH and port 22 are enabled or not | `bool` | `true` | no |
 | <a name="input_enemy_drop_item_rate"></a> [enemy\_drop\_item\_rate](#input\_enemy\_drop\_item\_rate) | Enemy drop item rate | `number` | `1` | no |
 | <a name="input_exist_player_after_logout"></a> [exist\_player\_after\_logout](#input\_exist\_player\_after\_logout) | Does player exist in game after logout | `bool` | `false` | no |
 | <a name="input_existing_backup_files_bootstrap_bucket_arn"></a> [existing\_backup\_files\_bootstrap\_bucket\_arn](#input\_existing\_backup\_files\_bootstrap\_bucket\_arn) | The ARN of an existing S3 bucket with Palworld save game data. Files will be downloaded to the server. Objects must be in the root of the S3 bucket and not compressed. | `string` | `""` | no |
@@ -299,3 +325,4 @@ No resources.
 | <a name="output_palworld_server_public_ip"></a> [palworld\_server\_public\_ip](#output\_palworld\_server\_public\_ip) | The public IP address of the Palworld server to connect on. |
 | <a name="output_palworld_server_public_port"></a> [palworld\_server\_public\_port](#output\_palworld\_server\_public\_port) | The public port to connect to the Palworld serer on |
 | <a name="output_palworldsettings_s3_content"></a> [palworldsettings\_s3\_content](#output\_palworldsettings\_s3\_content) | The contents of the palworldsettings.ini ( experimental ). |
+| <a name="output_session_manager_enabled"></a> [session\_manager\_enabled](#output\_session\_manager\_enabled) | Is AWS SSM Session Manager enabled or not. |

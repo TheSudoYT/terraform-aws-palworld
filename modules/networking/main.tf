@@ -29,6 +29,16 @@ resource "aws_security_group" "palworld_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  dynamic "ingress" {
+    for_each = var.enable_ssh ? [1] : []
+    content {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = var.ssh_ingress_allowed_cidr
+    }
+  }
+
   # RCON port if enabled
   dynamic "ingress" {
     for_each = var.enable_rcon ? [1] : []

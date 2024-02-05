@@ -1,3 +1,9 @@
+variable "enable_session_manager" {
+  description = "True or False. Determines if SSM Session Manager is enabled or not"
+  type        = bool
+  default     = false
+}
+
 variable "create_ssh_key" {
   description = "True or False. Determines if an SSH key is created in AWS"
   type        = bool
@@ -20,12 +26,6 @@ variable "ssh_public_key" {
   description = "The path to the ssh public key to be used with the EC2 instance"
   type        = string
   default     = "~/.ssh/palworld_public_key.pub"
-}
-
-variable "ssh_ingress_allowed_cidr" {
-  description = "The CIDR range to allow SSH incoming connections from"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
 }
 
 ### ec2 variables ###
