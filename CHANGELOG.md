@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.1.1](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.1.0...v1.1.1) (2024-02-11)
+
+
+### Bug Fixes
+
+* **s3-regions:** Fix to support AWS regions that do not support legacy global endpoint ([97a5045](https://github.com/TheSudoYT/terraform-aws-palworld/commit/97a504554a7b4fe8865c96d26c4668beac718f21))
+
 ## [1.1.0](https://github.com/TheSudoYT/terraform-aws-palworld/compare/v1.0.3...v1.1.0) (2024-02-05)
 
 
