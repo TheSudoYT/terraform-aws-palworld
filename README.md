@@ -122,7 +122,7 @@ Set `backup_files_storage_type = "s3"` if you have an AWS s3 bucket somewhere wi
 
 ### Using Local Files
 
-Set `backup_files_storage_type = "local"` if the save files are on your local host PC. Please note the warning below about the REQUIRED file structure of the bucket. Terraform and user_data are opinionated in how they retrieve and place these files, so you must adhere to this structure.
+Set `backup_files_storage_type = "local"` if the save files are on your local host PC. Please note the warning below about the REQUIRED file structure of the bucket [e.g. of file structure required: C:/Users/<username>/Desktop/palworld_aws/Saved/SaveGames/0/AC585CF94526439EA4A8F5AC615E5CDB]. Do not include the /Players in the file structure, stop at the hash after /0/. Additionally if using WINDOWS saves during migration, use EpicApp=PalServer -nosteam instead of EpicApp=PalServer. Terraform and user_data are opinionated in how they retrieve and place these files, so you must adhere to this structure.
 
 > [!WARNING]
 > When `backup_files_storage_type = "local"` using The objects/files in the directory you specify with `backup_files_local_path` must not be compressed. Terraform will iterate through each file in that directory and upload it to the root of an S3 bucket it creates. It will do this for `backup_files_local_path/Players` as well.
